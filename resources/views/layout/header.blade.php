@@ -109,6 +109,11 @@
             </li>
             @endrole
             <li>
+                <a href="{{route('show.expired.reward.point.list')}}" aria-expanded="false">
+                    <i class="fas fa-user-lock menu-icon"></i><span class="nav-text">Expired RewardPoint</span>
+                </a>
+            </li>
+            <li>
                 <a href="{{route('add.customer')}}" aria-expanded="false">
                     <i class="fas fa-user-lock menu-icon"></i><span class="nav-text">Create Customer</span>
                 </a>

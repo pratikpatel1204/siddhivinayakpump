@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\GiftHistory;
 use App\Models\RewardManagement;
+use App\Models\DailyRewardExpire;
 use App\Models\RedeemHistory;
 use App\Models\Reward;
 use App\Models\Service;
@@ -19,7 +20,7 @@ class ReportController extends Controller
     {
         return view('report.customer-report');
     }
-     public function search_customer_report(Request $request)
+    public function search_customer_report(Request $request)
     {
         $request->validate([
             'number' => 'required|numeric',
@@ -44,23 +45,23 @@ class ReportController extends Controller
         $rewardhistory = RedeemHistory::where('mobile_no', $number)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get();
-        
+
         $gifthistory = GiftHistory::where('mobile_no', $number)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get();
-        
+
         // Filter `gifts` by mobile_no and created_at
         $gifts = RewardManagement::where('mobile_no', $number)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get();
-        
+
         $reward = Reward::first();
-        
+
         foreach ($gifts as $gift) {
             $totalAmount = $gift->total_amount;
             $customerType = $gift->type;
             $gift->earned_points = 0;
-        
+
             if ($reward) {
                 if ($customerType === 'Regular' && $totalAmount >= $reward->regular_price) {
                     $gift->earned_points = floor($totalAmount / $reward->regular_price) * $reward->regular_gift_point;
@@ -70,7 +71,7 @@ class ReportController extends Controller
                     $gift->earned_points = floor($totalAmount / $reward->tractor_price) * $reward->tractor_gift_point;
                 }
             }
-        
+
             // Filter used points by mobile_no, type, and date
             $usedPoints = GiftHistory::whereBetween('created_at', [$startDate, $endDate])
                 ->where(function ($query) use ($gift) {
@@ -89,7 +90,7 @@ class ReportController extends Controller
                         }
                     });
                 })->sum('used_reward_points');
-        
+
             $gift->use_points = $usedPoints;
             $gift->pennding_points = max(0, $gift->earned_points - $usedPoints);
         }
@@ -295,5 +296,10 @@ class ReportController extends Controller
         // Fetch filtered data
         $filteredData = $query->get();
         return response()->json(['data' => $filteredData]);
+    }
+    public function show_expired_reward_point_list()
+    {
+        $expiredRewards = DailyRewardExpire::with('customer')->get();
+        return view('report.expired-reward-point-list', compact('expiredRewards'));
     }
 }

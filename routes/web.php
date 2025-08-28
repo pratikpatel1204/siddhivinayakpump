@@ -54,7 +54,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/add-customer', [CustomerController::class, 'add_customer'])->name('add.customer');
     Route::post('/save-customer', [CustomerController::class, 'save_customer'])->name('save.customer');
-     
+
+    Route::get('/show-expired-reward-point-list', [ReportController::class, 'show_expired_reward_point_list'])->name('show.expired.reward.point.list');
     
     Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::post('/send-whatsapp', [DashboardController::class, 'sendWhatsApp'])->name('send.whatsapp');
