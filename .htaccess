@@ -1,0 +1,19 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    RewriteCond %{SERVER_PORT} 80
+    RewriteRule ^(.*)$ https://siddhivinayakpump.com/$1 [R,L]
+
+
+    # Redirect to public folder if accessing it directly (optional)
+    RewriteCond %{REQUEST_URI} ^/public/ [NC]
+    RewriteRule ^(.*)$ /$1 [L,R=301]
+
+    # Handle requests by redirecting them to index.php
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+
+
