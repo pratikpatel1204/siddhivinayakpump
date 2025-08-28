@@ -26,6 +26,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+            $this->expired_reward();
             return response()->json(['redirect' => route('show.dashboard')], 200);
         }
 
@@ -68,45 +69,54 @@ class AuthController extends Controller
 
         return response()->json(['status' => 'success']);
     }
-    
-    public function expired_reward(){
+
+    public function expired_reward()
+    {
         $rew = Reward::first(); // Get first reward
         $today = Carbon::today()->format('d-m-Y'); // Get today's date in DD-MM-YYYY format
-        
-        $customers = Customer::select('date_time', 'vehicle_no', 'mobile_no', 'amount','type')->get();
+
+        $customers = Customer::select('date_time', 'vehicle_no', 'mobile_no', 'amount', 'type')->get();
         foreach ($customers as $customer) {
-            if ($customer->date_time) {
-                $expiryDate = Carbon::createFromFormat('d-m-Y', Carbon::parse($customer->date_time)->format('d-m-Y'))
-                    ->addDays($rew->expiry_days)
-                    ->format('d-m-Y');
-                if ($expiryDate == $today) {
+            if (!empty($customer->date_time) && $this->isValidDate($customer->date_time, 'd-m-Y H:i:s')) {            
+                $date = Carbon::parse($customer->date_time);
+                $expiryDate = $date->copy()->addDays($rew->expiry_days);
+                if ($expiryDate->isSameDay($today)) {
                     $rewardmanag = RewardManagement::where(function ($query) use ($customer) {
                         if (!empty($customer->vehicle_no)) {
                             $query->where('vehicle_no', $customer->vehicle_no);
                         }
                         if (!empty($customer->mobile_no)) {
-                            $query->where('mobile_no', $customer->mobile_no); // Changed to where()
+                            $query->where('mobile_no', $customer->mobile_no);
                         }
                         if (!empty($customer->type)) {
-                            $query->where('type', $customer->type); // Changed to where()
+                            $query->where('type', $customer->type);
                         }
                     })->first();
                     if ($customer->type == 'Regular' && $customer->amount >= $rew->regular_reward_price) {
-                        $reward_points = ($customer->amount / $rew->regular_reward_price) * $rew->regular_reward_points;  
-                    }else if($customer->type == 'Commercial' && $customer->amount >= $rew->commercial_reward_price){
-                        $reward_points = ($customer->amount / $rew->commercial_reward_price) * $rew->commercial_reward_points;  
-                    }else if($customer->type == 'Tractor' && $customer->amount >= $rew->tractor_reward_price){
-                        $reward_points = ($customer->amount / $rew->tractor_reward_price) * $rew->tractor_reward_points;  
-                    }else{
+                        $reward_points = ($customer->amount / $rew->regular_reward_price) * $rew->regular_reward_points;
+                    } else if ($customer->type == 'Commercial' && $customer->amount >= $rew->commercial_reward_price) {
+                        $reward_points = ($customer->amount / $rew->commercial_reward_price) * $rew->commercial_reward_points;
+                    } else if ($customer->type == 'Tractor' && $customer->amount >= $rew->tractor_reward_price) {
+                        $reward_points = ($customer->amount / $rew->tractor_reward_price) * $rew->tractor_reward_points;
+                    } else {
                         $reward_points = 0;
-                    }   
+                    }
                     $rewardmanag->pending_reward_points -= $reward_points;
                     $rewardmanag->earned_reward_points -= $reward_points;
                     $rewardmanag->pending_reward_points = max(0, $rewardmanag->pending_reward_points);
                     $rewardmanag->earned_reward_points = max(0, $rewardmanag->earned_reward_points);
-                    // $rewardmanag->save();        
+                    $rewardmanag->save();        
                 }
             }
+        }
+    }
+    private function isValidDate($date, $format = 'd-m-Y H:i:s')
+    {
+        try {
+            $d = Carbon::createFromFormat($format, $date);
+            return $d && $d->format($format) === $date;
+        } catch (\Exception $e) {
+            return false;
         }
     }
 }
