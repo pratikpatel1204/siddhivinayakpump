@@ -61,6 +61,11 @@
                     <i class="icon-speedometer menu-icon"></i><span class="nav-text">Dashboard</span>
                 </a>
             </li>
+            <li>
+                <a href="{{route('expired.reward')}}" aria-expanded="false">
+                    <i class="icon-speedometer menu-icon"></i><span class="nav-text">Update Expired Reward</span>
+                </a>
+            </li>
             @role('admin')
             <li>
                 <a href="{{route('show.all.report.list')}}" aria-expanded="false">

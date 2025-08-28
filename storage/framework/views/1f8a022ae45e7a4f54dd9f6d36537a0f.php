@@ -61,6 +61,11 @@
                     <i class="icon-speedometer menu-icon"></i><span class="nav-text">Dashboard</span>
                 </a>
             </li>
+            <li>
+                <a href="<?php echo e(route('expired.reward')); ?>" aria-expanded="false">
+                    <i class="icon-speedometer menu-icon"></i><span class="nav-text">Update Expired Reward</span>
+                </a>
+            </li>
             <?php if (\Illuminate\Support\Facades\Blade::check('role', 'admin')): ?>
             <li>
                 <a href="<?php echo e(route('show.all.report.list')); ?>" aria-expanded="false">

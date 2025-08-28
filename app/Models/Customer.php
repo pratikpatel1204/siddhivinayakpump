@@ -24,4 +24,8 @@ class Customer extends Model
         'vehicle_no',
         'mobile_no'
     ];
+    public function dailyRewardExpires()
+    {
+        return $this->hasMany(DailyRewardExpire::class, 'customer_id');
+    }
 }
