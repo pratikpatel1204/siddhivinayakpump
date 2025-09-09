@@ -30,8 +30,10 @@ Route::get('/', [AuthController::class, 'showLoginForm']);
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('/expired/reward', [AuthController::class, 'expired_reward'])->name('expired.reward');
 
+Route::get('/expired/reward', [RewardController::class, 'expired_reward'])->name('expired.reward');
+Route::get('/update-total-earned', [RewardController::class, 'updateTotalEarnedPoints']);
+Route::get('/update-total-expire', [RewardController::class, 'updateTotalExpirePointsRewar']);
 // Routes that require authentication
 Route::middleware(['auth'])->group(function () {
 
@@ -56,7 +58,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/save-customer', [CustomerController::class, 'save_customer'])->name('save.customer');
 
     Route::get('/show-expired-reward-point-list', [ReportController::class, 'show_expired_reward_point_list'])->name('show.expired.reward.point.list');
-    
+    Route::get('/get-vehicles-by-mobile', [RedeemController::class, 'getVehicles'])->name('get.vehicles.by.mobile');
+
     Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::post('/send-whatsapp', [DashboardController::class, 'sendWhatsApp'])->name('send.whatsapp');
         

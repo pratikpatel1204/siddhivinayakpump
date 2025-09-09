@@ -86,7 +86,9 @@ class CustomerController extends Controller
                 'amount' => $row[9] ?? null,
                 'print_id' => $row[10] ?? null,
                 'vehicle_no' => $row[11] ?? null,
-                'mobile_no' => $row[12] ?? null
+                'mobile_no' => $row[12] ?? null,
+                'reward_processed' => 0,
+                'reward_expired_processed' => 0
             ]);
     
             $rew = Reward::first();
@@ -108,6 +110,7 @@ class CustomerController extends Controller
                 $rewardmanag->total_amount += $row[9];
                 $rewardmanag->earned_reward_points += $reward_points;
                 $rewardmanag->pending_reward_points = $rewardmanag->earned_reward_points - $rewardmanag->used_reward_points;
+                $rewardmanag->total_earned_points += $reward_points;
                 $rewardmanag->save();
                 $whatsappIds[] = $rewardmanag->id;
             } else {
@@ -119,6 +122,7 @@ class CustomerController extends Controller
                     'earned_reward_points' => $reward_points,
                     'used_reward_points' => 0,
                     'pending_reward_points' => $reward_points,
+                    'total_earned_points' => $reward_points,
                 ]);
                 $whatsappIds[] = $newreward->id;
             }
@@ -173,7 +177,9 @@ class CustomerController extends Controller
             'amount' => $request->amount,
             'print_id' => $request->print_id,
             'vehicle_no' => $request->vehicle_no,
-            'mobile_no' => $request->mobile_no
+            'mobile_no' => $request->mobile_no,
+            'reward_processed' => 0,
+            'reward_expired_processed' => 0
         ]);
 
         // Get Reward Management Data
@@ -290,6 +296,8 @@ class CustomerController extends Controller
                 'print_id' => $request->print_id,
                 'vehicle_no' => $request->vehicle_no,
                 'mobile_no' => $request->mobile_no,
+                'reward_processed' => 0,
+                'reward_expired_processed' => 0
             ]);
         }     
         $rewardmanag = RewardManagement::where(function ($query) use ($request) {

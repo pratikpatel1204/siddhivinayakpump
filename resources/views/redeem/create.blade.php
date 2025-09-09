@@ -26,6 +26,7 @@
                                     <div class="form-group col-md-4">
                                         <label for="vehicle_no">Vehicle No</label>
                                         <input type="number" class="form-control" id="vehicle_no" name="vehicle_no" placeholder="Enter Vehicle No">
+                                        <div id="vehicle_suggestions" class="list-group" style="position: absolute; width: 100%;height: 100px;overflow: auto;"></div>
                                     </div>
                                     <div class="form-group col-md-1">
                                         <button type="button" id="searchBtn" class="btn btn-primary mt-4">Search</button>
@@ -128,7 +129,7 @@
                         $("#mobile_no").val(response.Reward.mobile_no);
                         $("#vehicle_no").val(response.Reward.vehicle_no);
                         $("#pending_reward_points").val(response.Reward.pending_reward_points);
-                        $("#name").val(response.redeemhistory.name);
+                        $("#name").val(response?.redeemhistory?.name ?? '');
                         $("#address").val(response.redeemhistory.address);
                         $("#village_city").val(response.redeemhistory.village_city);
                         $("#district").val(response.redeemhistory.district);
@@ -331,5 +332,40 @@
         });
     });
 
+</script>
+<script>
+$(document).ready(function() {
+    $('#mobile_no').on('keyup', function() {
+        let query = $(this).val();
+        if(query.length >= 3) {  // start searching after 3 digits
+            $.ajax({
+                url: "{{ route('get.vehicles.by.mobile') }}",
+                type: "GET",
+                data: { mobile_no: query },
+                success: function(data) {
+                    let suggestionBox = $('#vehicle_suggestions');
+                    suggestionBox.empty();
+
+                    if(data.length > 0){
+                        suggestionBox.show();
+                        $.each(data, function(index, vehicle){
+                            suggestionBox.append('<a href="#" class="list-group-item list-group-item-action vehicle-item">'+ vehicle.vehicle_no +'</a>');
+                        });
+                    } else {
+                        suggestionBox.hide();
+                    }
+                }
+            });
+        } else {
+            $('#vehicle_suggestions').hide();
+        }
+    });
+
+    // When clicking suggestion → fill input
+    $(document).on('click', '.vehicle-item', function(e) {
+        e.preventDefault();
+        $('#vehicle_no').val($(this).text());
+    });
+});
 </script>
 @endsection

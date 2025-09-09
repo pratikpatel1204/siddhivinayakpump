@@ -21,6 +21,8 @@ class RewardManagement extends Model
         'earned_reward_points',
         'used_reward_points',
         'pending_reward_points',
+        'total_earned_points',
+        'total_expired_points',
     ];
 
     // Optionally, define any castings (e.g., for dates or decimals)
@@ -29,5 +31,7 @@ class RewardManagement extends Model
         'earned_reward_points' => 'integer',
         'used_reward_points' => 'integer',
         'pending_reward_points' => 'integer',
+        'total_earned_points' => 'integer',
+        'total_expired_points' => 'integer',
     ];
 }

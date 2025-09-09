@@ -110,7 +110,13 @@ class ReportController extends Controller
     }
     public function reward_report_list()
     {
-        $rewardmanag = RewardManagement::all();
+        // $rewardmanag = RewardManagement::all();
+        $now = \Carbon\Carbon::now();
+
+        // Fetch only current month's RewardManagement records
+        $rewardmanag = RewardManagement::whereMonth('updated_at', $now->month)
+            ->whereYear('updated_at', $now->year)
+            ->get();
         foreach ($rewardmanag as $reward) {
             $rewardhistory = RedeemHistory::with('emp')->where(function ($query) use ($reward) {
                 $query->where(function ($q) use ($reward) {

@@ -22,7 +22,9 @@ class Customer extends Model
         'amount',
         'print_id',
         'vehicle_no',
-        'mobile_no'
+        'mobile_no',
+        'reward_processed',
+        'reward_expired_processed '
     ];
     public function dailyRewardExpires()
     {

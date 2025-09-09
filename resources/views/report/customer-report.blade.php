@@ -135,6 +135,7 @@
                                         <th>Earned Points</th>
                                         <th>Used Points</th>
                                         <th>Pending Points</th>                                                                          
+                                        <th>Expired Points</th>                                                                         
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -145,9 +146,10 @@
                                     <td>${item.type}</td>
                                     <td>${item.vehicle_no}</td>
                                     <td>${item.mobile_no}</td>
-                                    <td>${item.earned_reward_points}</td>
+                                    <td>${item.total_earned_points}</td>
                                     <td>${item.used_reward_points}</td>
-                                    <td>${item.pending_reward_points}</td>                                    
+                                    <td>${item.pending_reward_points}</td>  
+                                    <td>${Math.max(0, item.total_expired_points - item.used_reward_points)}</td>                                  
                                 </tr>
                             `;
                         });
@@ -165,7 +167,7 @@
                                         <th>Mobile No</th>                                        
                                         <th>Earned Points</th>
                                         <th>Used Points</th>
-                                        <th>Pending Points</th>                                                                          
+                                        <th>Pending Points</th>                                                                           
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -178,7 +180,7 @@
                                     <td>${item.mobile_no}</td>
                                     <td>${item.earned_points}</td>
                                     <td>${item.use_points}</td>
-                                    <td>${item.pennding_points}</td>
+                                    <td>${item.pennding_points}</td>                                    
                                 </tr>
                             `;
                         });
@@ -326,7 +328,7 @@
         locale: {
             format: 'YYYY-MM-DD'
         }
-        , startDate: moment(), // Set the start date to today
+        ,startDate: moment("2024-02-28", "YYYY-MM-DD"), // Set the start date to today
         endDate: moment(), // Set the end date to today
         autoUpdateInput: true // Automatically updates the input field with the selected date
     });

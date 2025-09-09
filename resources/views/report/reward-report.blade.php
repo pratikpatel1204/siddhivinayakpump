@@ -48,7 +48,7 @@
             </div>
         </div>
     </div>
-    <div class="container-fluid">
+    <div class="container-fluid"> 
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -67,6 +67,7 @@
                                         <th>Earn Reward Points</th>
                                         <th>Used Reward Points</th>
                                         <th>Pending Reward Points</th>
+                                        <th>Expaired Reward Points</th>
                                         <th>Date</th>
                                     </tr>
                                 </thead>
@@ -80,9 +81,10 @@
                                         <td>{{ $mreward->district }}</td>
                                         <td>{{ $mreward->vehicle_no }}</td>
                                         <td>{{ $mreward->mobile_no }}</td>
-                                        <td>{{ $mreward->earned_reward_points }}</td>
+                                        <td>{{ $mreward->total_earned_points }}</td>
                                         <td>{{ $mreward->used_reward_points }}</td>
                                         <td>{{ $mreward->pending_reward_points }}</td>
+                                        <td>{{ max(0, $mreward->total_expired_points - $mreward->used_reward_points) }}</td>
                                         <td>{{ $mreward->updated_at ? $mreward->updated_at->format('d-m-Y H:i:s') : 'N/A' }}</td>
                                     </tr>
                                     @endforeach
@@ -147,10 +149,10 @@
                 , end_date: endDate
             }
             , success: function(response) {
-                console.log(response);
                 var table = $('#report_table').DataTable();
                 table.clear().draw();
                 response.data.forEach(function(item, index) {
+                    console.log(item.updated_at);
                     table.row.add([
                         index + 1
                         , item.type
@@ -159,10 +161,11 @@
                         , item.district
                         , item.vehicle_no
                         , item.mobile_no
-                        , item.earned_reward_points
+                        , item.total_expired_points
                         , item.used_reward_points
                         , item.pending_reward_points
-                        , item.updated_at
+                        , Math.max(0, item.total_expired_points - item.used_reward_points)
+                        , moment(item.updated_at).format('DD-MM-YYYY HH:mm:ss')
                     ]).draw(false);
                 });
             }
